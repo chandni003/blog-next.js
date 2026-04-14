@@ -30,7 +30,7 @@ export default function PostListView() {
             return (
               <tr key={item?.id}>
                 <td className="border px-4 py-3">{key + 1}</td>
-                <td className="border px-4 py-3">{item?.Title}</td>
+                <td className="border px-4 py-3">{item?.name}</td>
                 <td className="border px-4 py-3">{item?.slug}</td>
                 <td className="border px-4 py-3">
                   <Link href={`/admin/posts/form?id=${item?.id}`}>

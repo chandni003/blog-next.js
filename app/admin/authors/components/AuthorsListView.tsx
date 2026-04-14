@@ -4,7 +4,7 @@ import { useAuthors } from "@/lib/firebase/author/read";
 import Link from "next/link";
 
 export default function AuthorsListView() {
-  const { data, error, isloading } = useAuthors()
+  const { data, error, isloading } = useAuthors();
   if (isloading) {
     return <h1>Loading...</h1>;
   }
@@ -19,24 +19,29 @@ export default function AuthorsListView() {
       <table className="w-full">
         <thead>
           <tr>
-            <th className="border px-4 py-3 bg-blue-50">sr.</th >
-            <th className="border px-4 py-3 bg-blue-50">Name</th >
-            <th className="border px-4 py-3 bg-blue-50">Slug</th>
+            <th className="border px-4 py-3 bg-blue-50">sr.</th>
+            <th className="border px-4 py-3 bg-blue-50">Name</th>
+            <th className="border px-4 py-3 bg-blue-50">Email</th>
             <th className="border px-4 py-3 bg-blue-50">Action</th>
           </tr>
         </thead>
         <tbody>
           {data?.map((item: any, key: any) => {
-           
-            return <tr key={item?.id}>
+            return (
+              <tr key={item?.id}>
                 <td className="border px-4 py-3">{key + 1}</td>
                 <td className="border px-4 py-3">{item?.name}</td>
-                <td className="border px-4 py-3">{item?.slug}</td>
+                <td className="border px-4 py-3">{item?.email}</td>
                 <td className="border px-4 py-3">
-                  <Link href={`/admin/authors/form?id=${item?.id}`}>                  <button className=" cursor-pointer text-white bg-blue-400 rounded-full px-3 py-1 text-sm font-bold">Action</button></Link>
-</td>
+                  <Link href={`/admin/authors/form?id=${item?.id}`}>
+                    {" "}
+                    <button className=" cursor-pointer text-white bg-blue-400 rounded-full px-3 py-1 text-sm font-bold">
+                      Action
+                    </button>
+                  </Link>
+                </td>
               </tr>
-            
+            );
           })}
         </tbody>
       </table>

@@ -75,17 +75,17 @@ export default function Page() {
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm text-gray-500">
-              Author slug <span className="text-red-500">*</span>
+              Author email <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
               onChange={(e) => {
                 e.preventDefault();
-                handleData("slug", e.target.value);
+                handleData("email", e.target.value);
               }}
               value={data?.slug}
               required
-              placeholder="Author slug"
+              placeholder="Author email"
               className="rounded-full px-4 py-2 border bg-gray-50"
             />
           </div>
