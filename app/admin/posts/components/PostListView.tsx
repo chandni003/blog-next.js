@@ -1,55 +1,3 @@
-// "use client";
-
-// import { usePost } from "@/lib/firebase/post/read";
-// import Link from "next/link";
-
-// export default function PostListView() {
-//   const { data, error, isloading } = usePost();
-//   if (isloading) {
-//     return <h1>Loading...</h1>;
-//   }
-//   if (error) {
-//     return <h1>{error}</h1>;
-//   }
-//   if (!data) {
-//     return <h1>data not found..</h1>;
-//   }
-//   return (
-//     <section className="text-center p-10">
-//       <table className="w-full">
-//         <thead>
-//           <tr>
-//             <th className="border px-4 py-3 bg-blue-50">sr.</th>
-//             <th className="border px-4 py-3 bg-blue-50">Title</th>
-//             <th className="border px-4 py-3 bg-blue-50">Slug</th>
-//             <th className="border px-4 py-3 bg-blue-50">Action</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {data?.map((item: any, key: any) => {
-//             return (
-//               <tr key={item?.id}>
-//                 <td className="border px-4 py-3">{key + 1}</td>
-//                 <td className="border px-4 py-3">{item?.name}</td>
-//                 <td className="border px-4 py-3">{item?.slug}</td>
-//                 <td className="border px-4 py-3">
-//                   <Link href={`/admin/posts/form?id=${item?.id}`}>
-//                     {" "}
-//                     <button className=" cursor-pointer text-white bg-blue-400 rounded-full px-3 py-1 text-sm font-bold">
-//                       Action
-//                     </button>
-//                   </Link>
-//                 </td>
-//               </tr>
-//             );
-//           })}
-//         </tbody>
-//       </table>
-//     </section>
-//   );
-// }
-
-
 "use client";
 
 import { usePost } from "@/lib/firebase/post/read";
@@ -70,15 +18,15 @@ export default function PostListView() {
   if (isloading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <Loader2 className="size-10 text-emerald-500 animate-spin" />
-        <p className="text-slate-500 font-medium animate-pulse">Retrieving articles...</p>
+        <Loader2 className="size-10 text-primary animate-spin" />
+        <p className="text-muted-foreground font-medium animate-pulse">Retrieving articles...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center gap-3 p-6 m-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500">
+      <div className="flex items-center gap-3 p-6 m-6 rounded-2xl bg-destructive/10 border border-destructive/20 text-destructive">
         <AlertCircle className="size-5" />
         <p className="font-bold">{error}</p>
       </div>
@@ -87,10 +35,10 @@ export default function PostListView() {
 
   if (!data || data.length === 0) {
     return (
-      <div className="text-center py-20">
-        <FileText className="size-12 text-slate-800 mx-auto mb-4" />
-        <h1 className="text-slate-400 font-bold text-xl">No articles found</h1>
-        <p className="text-slate-600 text-sm mt-2">Start by creating your first blog post.</p>
+      <div className="text-center py-20 bg-muted/20 rounded-[2.5rem] border border-dashed border-border">
+        <FileText className="size-12 text-muted-foreground opacity-20 mx-auto mb-4" />
+        <h1 className="text-muted-foreground font-bold text-xl">No articles found</h1>
+        <p className="text-muted-foreground/60 text-sm mt-2">Start by creating your first blog post.</p>
       </div>
     );
   }
@@ -99,53 +47,53 @@ export default function PostListView() {
     <section className="w-full overflow-x-auto custom-scrollbar">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-white/5">
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+          <tr className="border-b border-border">
+            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
               <div className="flex items-center gap-2"><Hash className="size-3" /> ID</div>
             </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Content Details
             </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">
+            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
               URL Slug
             </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 text-right">
+            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground text-right">
               Management
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-border">
           {data?.map((item: any, key: any) => (
             <tr 
               key={item?.id} 
-              className="group hover:bg-emerald-500/[0.02] transition-colors duration-200"
+              className="group hover:bg-primary/[0.02] transition-all duration-200"
             >
-              <td className="px-6 py-5 text-sm text-slate-600 font-mono">
+              <td className="px-6 py-5 text-sm text-muted-foreground font-mono">
                 {String(key + 1).padStart(2, '0')}
               </td>
               <td className="px-6 py-5">
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-100 group-hover:text-emerald-400 transition-colors">
+                  <span className="text-sm font-bold group-hover:text-primary transition-colors">
                     {item?.name}
                   </span>
-                  <span className="text-[10px] text-slate-500 mt-0.5">Updated recently</span>
+                  <span className="text-[10px] text-muted-foreground/60 mt-0.5 font-medium italic">Published Index: {item?.id?.slice(0, 8)}</span>
                 </div>
               </td>
               <td className="px-6 py-5">
-                <div className="flex items-center gap-2 text-xs text-slate-400 bg-black/20 w-fit px-3 py-1 rounded-md border border-slate-800">
-                  <ExternalLink className="size-3 text-slate-600" />
+                <div className="flex items-center gap-2 text-[11px] text-muted-foreground/80 bg-muted/40 w-fit px-3 py-1 rounded-lg border border-border group-hover:border-primary/20 font-mono transition-all">
+                  <ExternalLink className="size-3 text-muted-foreground/40 group-hover:text-primary/70" />
                   {item?.slug}
                 </div>
               </td>
               <td className="px-6 py-5 text-right">
                 <Link href={`/admin/posts/form?id=${item?.id}`} passHref>
                   <Button 
-                    variant="secondary" 
+                    variant="ghost" 
                     size="sm" 
-                    className="rounded-full h-8 px-4 text-xs font-bold gap-2 hover:border-emerald-500/50 hover:text-emerald-400"
+                    className="rounded-full h-9 px-5 text-xs font-bold gap-2 text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all border border-transparent hover:border-primary/20 shadow-sm hover:shadow-primary/5"
                   >
                     <Edit3 className="size-3" />
-                    Edit
+                    Configure
                   </Button>
                 </Link>
               </td>

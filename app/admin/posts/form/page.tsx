@@ -219,7 +219,7 @@ import { usePostForm } from "./contexts/PostFormContext";
 import { useEffect } from "react";
 import { useAuthors } from "@/lib/firebase/author/read";
 import { RTEfield } from "./components/RTEField";
-import { Button } from "@/components/ui/button"; // Using your custom button
+import { Button } from "@/components/ui/button";
 import { 
   PenLine, 
   Trash2, 
@@ -228,8 +228,11 @@ import {
   User, 
   Type, 
   Link2,
-  Sparkles 
+  Sparkles,
+  Image as ImageIcon,
+  ExternalLink
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function Page() {
   const {
@@ -252,26 +255,26 @@ export default function Page() {
   }, [updatePostId]);
 
   return (
-    <main className="min-h-screen w-full bg-[#0a0a0c] p-6 lg:p-10 text-slate-200">
+    <main className="min-h-screen w-full bg-background p-6 lg:p-10 text-foreground transition-colors duration-300">
       {/* Header Section */}
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10">
         <div className="flex items-center gap-4">
-          <div className="size-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-            <PenLine className="text-emerald-500 size-6" />
+          <div className="size-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <PenLine className="text-primary size-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Editor Console</h1>
-            <p className="text-sm text-slate-500">Manage your blog content and metadata</p>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Editor Console</h1>
+            <p className="text-sm text-muted-foreground">Draft and publish your latest technical insights.</p>
           </div>
         </div>
 
         {updatePostId ? (
-          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-orange-500/10 text-orange-500 border border-orange-500/20 px-4 py-2 rounded-full">
+          <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest bg-amber-500/10 text-amber-500 border border-amber-500/20 px-4 py-2 rounded-full">
             <Sparkles className="size-3" /> Update Mode
           </span>
         ) : (
-          <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-4 py-2 rounded-full">
-            <CheckCircle2 className="size-3" /> Create Mode
+          <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-full">
+            <CheckCircle2 className="size-3" /> Archive Ready
           </span>
         )}
       </div>
@@ -287,27 +290,27 @@ export default function Page() {
               handleCreate();
             }
           }}
-          className="lg:col-span-4 flex flex-col gap-6 bg-slate-900/40 border border-white/5 p-8 rounded-[2rem] h-fit sticky top-24"
+          className="lg:col-span-4 flex flex-col gap-6 bg-card/50 backdrop-blur-sm border border-border p-8 rounded-[2rem] h-fit sticky top-24 shadow-sm"
         >
           {/* Title Input */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-              <Type className="size-3" /> Post Title <span className="text-emerald-500">*</span>
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
+              <Type className="size-3" /> Post Title <span className="text-primary">*</span>
             </label>
             <input
               type="text"
               onChange={(e) => handleData("name", e.target.value)}
               value={data?.name || ""}
               required
-              placeholder="Enter a catchy title..."
-              className="w-full bg-black/40 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors placeholder:text-slate-700"
+              placeholder="A captivating title..."
+              className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/50"
             />
           </div>
 
           {/* Slug Input */}
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-              <Link2 className="size-3" /> Slug <span className="text-emerald-500">*</span>
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
+              <Link2 className="size-3" /> Slug <span className="text-primary">*</span>
             </label>
             <input
               type="text"
@@ -316,27 +319,61 @@ export default function Page() {
               value={data?.slug || ""}
               required
               placeholder="post-url-slug"
-              className="w-full bg-black/20 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-muted/30 border border-border rounded-xl px-4 py-3 text-sm text-muted-foreground focus:outline-none focus:border-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
           <SelectCategoryfield />
           <SelectAuthorfield />
 
+          {/* Image URL Input */}
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
+              <ImageIcon className="size-3" /> Thumbnail URL
+            </label>
+            <div className="relative">
+              <input
+                type="url"
+                onChange={(e) => handleData("thumbnailUrl", e.target.value)}
+                value={data?.thumbnailUrl || ""}
+                placeholder="https://images.unsplash.com/..."
+                className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/50 pr-10"
+              />
+              <ExternalLink className="absolute right-3 top-3.5 size-4 text-muted-foreground/50" />
+            </div>
+          </div>
+
+          {/* Image Preview */}
+          {data?.thumbnailUrl && (
+             <div className="space-y-2">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground px-1">Live Preview</p>
+                <div className="aspect-video rounded-2xl overflow-hidden border border-border bg-muted relative group">
+                   <img 
+                     src={data.thumbnailUrl} 
+                     alt="Preview" 
+                     className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500"
+                     onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x225?text=Invalid+URL';
+                     }}
+                   />
+                </div>
+             </div>
+          )}
+
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-medium">
+            <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium animate-in fade-in slide-in-from-top-1">
               {error}
             </div>
           )}
 
-          <div className="flex flex-col gap-3 pt-4">
+          <div className="flex flex-col gap-3 pt-2">
             {!isdone && (
               <Button
                 type="submit"
                 disabled={isloading || isdone}
-                className="w-full rounded-xl py-6 font-bold text-md"
+                className="w-full rounded-xl py-6 font-bold text-md shadow-lg shadow-primary/20"
               >
-                {isloading ? "Processing..." : updatePostId ? "Update Post" : "Publish Post"}
+                {isloading ? "Processing..." : updatePostId ? "Update Metadata" : "Broadcast Post"}
               </Button>
             )}
 
@@ -355,25 +392,25 @@ export default function Page() {
             )}
 
             {isdone && (
-              <div className="flex items-center justify-center gap-2 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 font-bold">
+              <div className="flex items-center justify-center gap-2 p-4 rounded-xl bg-primary/10 border border-primary/20 text-primary font-bold animate-in zoom-in-95">
                 <CheckCircle2 className="size-5" />
-                Successfully {updatePostId ? "Updated" : "Created"}
+                Successfully Synchronized
               </div>
             )}
           </div>
         </form>
 
-        {/* Right Column: Rich Text Editor */}
-        <div className="lg:col-span-8 bg-slate-900/20 border border-white/5 rounded-[2rem] overflow-hidden">
-          <div className="p-6 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400">Content Editor</h2>
+        {/* Right Column: Content Editor */}
+        <div className="lg:col-span-8 bg-card/30 backdrop-blur-sm border border-border rounded-[2.5rem] overflow-hidden shadow-sm flex flex-col h-fit">
+          <div className="p-6 border-b border-border bg-muted/20 flex items-center justify-between">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Pro Manuscript Editor</h2>
             <div className="flex gap-2">
-              <div className="size-2 rounded-full bg-red-500/20" />
-              <div className="size-2 rounded-full bg-orange-500/20" />
-              <div className="size-2 rounded-full bg-emerald-500/20" />
+              <div className="size-2 rounded-full bg-destructive/40" />
+              <div className="size-2 rounded-full bg-amber-500/40" />
+              <div className="size-2 rounded-full bg-primary/40" />
             </div>
           </div>
-          <div className="p-2">
+          <div className="p-4 bg-background/50">
             <RTEfield />
           </div>
         </div>
@@ -388,24 +425,29 @@ function SelectCategoryfield() {
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor="category" className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-        <Layers className="size-3" /> Category <span className="text-emerald-500">*</span>
+      <label htmlFor="category" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
+        <Layers className="size-3" /> Category <span className="text-primary">*</span>
       </label>
-      <select
-        name="category"
-        id="category"
-        value={data?.categoryId || ""}
-        onChange={(e) => handleData("categoryId", e.target.value)}
-        required
-        className="w-full bg-black/40 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors appearance-none cursor-pointer"
-      >
-        <option value="" className="bg-slate-900">Select Category</option>
-        {categories?.map((item: any) => (
-          <option key={item?.id} value={item?.id} className="bg-slate-900">
-            {item?.name}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          name="category"
+          id="category"
+          value={data?.categoryId || ""}
+          onChange={(e) => handleData("categoryId", e.target.value)}
+          required
+          className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+        >
+          <option value="">Select Target Category</option>
+          {categories?.map((item: any) => (
+            <option key={item?.id} value={item?.id}>
+              {item?.name}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-4 top-4 pointer-events-none">
+           <Layers className="size-4 text-muted-foreground/40" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -416,24 +458,29 @@ function SelectAuthorfield() {
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor="author" className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-        <User className="size-3" /> Author <span className="text-emerald-500">*</span>
+      <label htmlFor="author" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 px-1">
+        <User className="size-3" /> Contributor <span className="text-primary">*</span>
       </label>
-      <select
-        name="author"
-        id="author"
-        value={data?.authorId || ""}
-        onChange={(e) => handleData("authorId", e.target.value)}
-        required
-        className="w-full bg-black/40 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors appearance-none cursor-pointer"
-      >
-        <option value="" className="bg-slate-900">Select Author</option>
-        {author?.map((item: any) => (
-          <option key={item?.id} value={item?.id} className="bg-slate-900">
-            {item?.name}
-          </option>
-        ))}
-      </select>
+      <div className="relative">
+        <select
+          name="author"
+          id="author"
+          value={data?.authorId || ""}
+          onChange={(e) => handleData("authorId", e.target.value)}
+          required
+          className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+        >
+          <option value="">Select Lead Author</option>
+          {author?.map((item: any) => (
+            <option key={item?.id} value={item?.id}>
+              {item?.name}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-4 top-4 pointer-events-none">
+           <User className="size-4 text-muted-foreground/40" />
+        </div>
+      </div>
     </div>
   );
-}
+}
