@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { CheckCircle2, XCircle, Clock, ExternalLink, Search, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Clock, Search, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function AdminWritersPage() {
@@ -45,122 +44,126 @@ export default function AdminWritersPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-background p-6 lg:p-10 text-foreground transition-colors duration-300">
+    <main className="flex min-h-screen flex-col gap-8 p-6 lg:p-10">
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-        <div className="flex items-center gap-4">
-          <div className="size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-            <Users className="text-primary size-7" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Manage Writers</h1>
-            <p className="text-sm text-muted-foreground mt-1">Review and approve writer access requests.</p>
-          </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-foreground">Writer Requests</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Review and manage writer applications
+          </p>
         </div>
-        <div className="flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-full shadow-sm">
-          <Search className="size-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 h-10 px-4 bg-card border border-border rounded-lg text-muted-foreground">
+          <Search className="size-4 shrink-0" />
           <input
             type="text"
-            placeholder="Search by name or email..."
+            placeholder="Search applications..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="bg-transparent border-none text-sm focus:outline-none placeholder:text-muted-foreground/50 w-48"
+            className="bg-transparent text-sm focus:outline-none w-44 placeholder:text-muted-foreground/60"
           />
         </div>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-2 mb-8 flex-wrap">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2">
         {(["all", "pending", "approved", "rejected"] as const).map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={cn(
-              "px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all border",
+              "px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg border transition-all",
               filter === f
-                ? "bg-primary text-primary-foreground border-primary shadow-md"
-                : "bg-card text-muted-foreground border-border hover:border-primary/30"
+                ? "bg-foreground text-background border-foreground"
+                : "bg-card text-muted-foreground border-border hover:bg-muted"
             )}
           >
-            {f} <span className="ml-1 opacity-60">({counts[f]})</span>
+            {f} <span className="opacity-50 ml-1">({counts[f]})</span>
           </button>
         ))}
       </div>
 
-      {/* Requests Table */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-5 border-b border-border bg-muted/30 flex items-center gap-2">
-          <div className="size-2 rounded-full bg-primary animate-pulse" />
+      {/* List */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-            Writer Applications — {filtered.length} result{filtered.length !== 1 ? "s" : ""}
+            Applications — {filtered.length} {filtered.length === 1 ? "record" : "records"}
           </h2>
         </div>
 
         {isLoading ? (
-          <div className="p-6 space-y-3">
+          <div className="divide-y divide-border">
             {Array(4).fill(0).map((_, i) => (
-              <div key={i} className="h-20 bg-muted animate-pulse rounded-xl" />
+              <div key={i} className="p-6 flex gap-4 animate-pulse">
+                <div className="size-10 bg-muted rounded-full shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-muted rounded w-1/4" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
+                </div>
+              </div>
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="py-24 text-center opacity-40 italic">No applications found.</div>
+          <div className="py-20 text-center">
+            <ShieldCheck className="size-10 text-muted-foreground/30 mx-auto mb-3" strokeWidth={1.5} />
+            <p className="text-sm text-muted-foreground">No applications found</p>
+          </div>
         ) : (
           <div className="divide-y divide-border">
             {filtered.map(req => (
-              <div key={req.id} className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 hover:bg-muted/20 transition-colors">
-                <div className="flex items-start gap-4">
-                  <div className="size-10 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center shrink-0 text-sm">
+              <div key={req.id} className="px-6 py-5 flex flex-col md:flex-row md:items-center gap-4 hover:bg-muted/20 transition-colors">
+                
+                {/* Info */}
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <div className="size-10 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-foreground shrink-0 border border-border">
                     {req.name?.charAt(0)?.toUpperCase() || "?"}
                   </div>
                   <div className="min-w-0">
-                    <p className="font-bold text-foreground">{req.name}</p>
-                    <p className="text-sm text-muted-foreground">{req.email}</p>
-                    {req.bio && <p className="text-xs text-muted-foreground mt-1 line-clamp-1 max-w-sm">{req.bio}</p>}
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground truncate">{req.name}</p>
+                      <span className={cn(
+                        "text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border",
+                        req.status === "pending" ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
+                        req.status === "approved" ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" :
+                        "bg-red-500/10 text-red-600 border-red-500/20"
+                      )}>
+                        {req.status}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{req.email}</p>
+                    {req.bio && <p className="text-sm text-foreground/80 mt-2 line-clamp-2">{req.bio}</p>}
                     {req.portfolio && (
-                      <a href={req.portfolio} target="_blank" rel="noopener noreferrer" className="text-xs text-primary flex items-center gap-1 mt-1 hover:underline">
-                        <ExternalLink className="size-3" /> Portfolio
+                      <a href={req.portfolio} target="_blank" rel="noopener noreferrer" className="inline-block text-xs font-semibold text-muted-foreground hover:text-foreground mt-2 border border-border px-3 py-1 rounded-lg">
+                        View Portfolio
                       </a>
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className={cn(
-                    "text-[10px] font-bold px-3 py-1 rounded-full border",
-                    req.status === "pending" ? "bg-amber-100 text-amber-700 border-amber-200" :
-                    req.status === "approved" ? "bg-green-100 text-green-700 border-green-200" :
-                    "bg-red-100 text-red-700 border-red-200"
-                  )}>
-                    {req.status === "pending" && <Clock className="inline size-3 mr-1" />}
-                    {req.status === "approved" && <CheckCircle2 className="inline size-3 mr-1" />}
-                    {req.status === "rejected" && <XCircle className="inline size-3 mr-1" />}
-                    {req.status}
-                  </span>
-                  {req.status === "pending" && (
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        className="rounded-full h-8 px-4 text-xs font-bold bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => updateStatus(req.id, "approved")}
-                      >
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="rounded-full h-8 px-4 text-xs font-bold"
-                        onClick={() => updateStatus(req.id, "rejected")}
-                      >
-                        Reject
-                      </Button>
-                    </div>
-                  )}
-                </div>
+
+                {/* Actions */}
+                {req.status === "pending" && (
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => updateStatus(req.id, "approved")}
+                      className="px-4 py-2 bg-foreground text-background text-xs font-semibold rounded-lg hover:opacity-85 transition-opacity"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => updateStatus(req.id, "rejected")}
+                      className="px-4 py-2 bg-muted text-foreground text-xs font-semibold rounded-lg hover:bg-muted/80 transition-colors border border-border"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
       </div>
+
     </main>
   );
 }

@@ -137,11 +137,14 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useState } from "react";
 
-export default function Sidebar() {
+interface SidebarProps {
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (v: boolean) => void;
+}
+
+export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps) {
   const pathname = usePathname();
   const { user, handleLogout } = useAuth();
-
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const links = [
     { name: "Dashboard", link: "/admin/dashboard", icon: <Gauge /> },
@@ -150,6 +153,7 @@ export default function Sidebar() {
     { name: "Authors", link: "/admin/authors", icon: <User /> },
     { name: "Users", link: "/admin/users", icon: <Users /> },
     { name: "Requests", link: "/admin/writers", icon: <Users /> },
+    { name: "My Profile", link: "/admin/profile", icon: <User /> },
   ];
 
   return (
@@ -235,31 +239,16 @@ export default function Sidebar() {
               <LogOut className="size-4" />
             </Button>
           </div>
+          </div>
         </div>
       </aside>
 
-      {/* ─── Mobile Top Header & Menu ────────────────────────────── */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border shadow-sm">
-        <div className="flex items-center justify-between h-16 px-4">
-          <Link href="/admin/dashboard" className="flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-              <ShieldCheck className="size-4 text-primary" />
-            </div>
-            <span className="font-bold tracking-tight text-foreground">Admin Console</span>
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-foreground"
-          >
-            {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
-          </Button>
-        </div>
+      {/* ─── Mobile Menu Overlay ────────────────────────────── */}
 
-        {/* Mobile Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="absolute top-16 left-0 right-0 bg-background border-b border-border shadow-xl animate-in slide-in-from-top-2 duration-200">
+      {/* Mobile Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed top-14 left-0 right-0 bottom-0 z-40 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="absolute top-0 left-0 right-0 bg-background border-b border-border shadow-xl animate-in slide-in-from-top-2 duration-200">
             <nav className="flex flex-col p-4 space-y-2 max-h-[80vh] overflow-y-auto">
               {links.map((item) => {
                 const isActive = pathname === item.link || pathname.startsWith(item.link + "/");
@@ -319,8 +308,8 @@ export default function Sidebar() {
               </div>
             </nav>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </>
   );
 }

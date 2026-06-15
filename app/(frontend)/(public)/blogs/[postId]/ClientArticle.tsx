@@ -1,97 +1,117 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Share2, Bookmark, MessageCircle, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
+import { Share2, ArrowLeft, Clock, Hash, PenTool } from "lucide-react";
+import { calculateReadingTime } from "@/lib/utils";
 
-export function ClientArticle({ post, authorName, authorInitials }: { post: any, authorName: string, authorInitials: string }) {
+export function ClientArticle({ post, authorName, authorInitials }: { post: any; authorName: string; authorInitials: string }) {
+  const readingTime = calculateReadingTime(post?.content);
+  const publishDate = post?.timestamp ? new Date(post.timestamp).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : null;
+
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({ title: post?.name, url: window.location.href });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
+
   return (
-    <motion.article 
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className="container mx-auto px-4 sm:px-6 pt-16 max-w-[680px]"
-    >
-      
-      {/* Title & Description */}
+    <div className="container mx-auto px-4 sm:px-6 max-w-[720px] pt-8 pb-24">
+
+      {/* Back nav */}
       <div className="mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] text-foreground mb-4">
-          {post?.name}
-        </h1>
-        {post?.shortDescription && (
-          <p className="text-xl text-muted-foreground leading-relaxed font-serif">
-            {post.shortDescription}
-          </p>
-        )}
+        <Link href="/blogs" className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="size-3.5" />
+          All Posts
+        </Link>
       </div>
 
-      {/* Author Block */}
+      {/* Category + Meta */}
+      {(post?.categoryId || post?.timestamp) && (
+        <div className="flex items-center gap-3 mb-6">
+          {post.categoryId && (
+            <Link href={`/blogs?category=${post.categoryId}`} className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+              <Hash className="size-3" />
+              {post.categoryId}
+            </Link>
+          )}
+          {post.categoryId && publishDate && <span className="opacity-30 text-xs">·</span>}
+          {publishDate && <span className="text-[10px] font-medium text-muted-foreground">{publishDate}</span>}
+          <span className="opacity-30 text-xs">·</span>
+          <span className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
+            <Clock className="size-3" />{readingTime} min read
+          </span>
+        </div>
+      )}
+
+      {/* Title */}
+      <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground leading-tight mb-4">
+        {post?.name}
+      </h1>
+
+      {/* Short description */}
+      {post?.shortDescription && (
+        <p className="text-xl text-muted-foreground leading-relaxed mb-8 font-serif border-b border-border pb-8">
+          {post.shortDescription}
+        </p>
+      )}
+
+      {/* Author + Share row */}
       <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-4">
-          <div className="size-12 rounded-full bg-muted flex items-center justify-center text-foreground font-bold shrink-0">
-            {authorInitials}
+        <div className="flex items-center gap-3">
+          <div className="size-10 rounded-full bg-muted flex items-center justify-center text-foreground border border-border shrink-0">
+            <PenTool className="size-4" strokeWidth={2} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold">{authorName}</span>
-              <span className="text-green-600 text-xs font-bold px-1.5 py-0.5 rounded-full bg-green-50">Follow</span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
-              <span>5 min read</span>
-              <span>·</span>
-              <span>{post?.timestamp ? new Date(post.timestamp).toLocaleDateString() : "Recently"}</span>
-            </div>
+            <p className="text-sm font-bold text-foreground">{authorName}</p>
           </div>
         </div>
-      </div>
-
-      {/* Floating Action Bar */}
-      <div className="flex items-center justify-between border-y border-border py-3 mb-10 text-muted-foreground">
-        <div className="flex items-center gap-6">
-          <button aria-label="Like" className="flex items-center gap-2 hover:text-foreground transition-colors">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="size-6"><path d="M11.996 22c-2.34-3.13-9.5-10.42-9.5-14.5A4.5 4.5 0 0 1 6.996 3a4.5 4.5 0 0 1 5 3 4.5 4.5 0 0 1 5-3 4.5 4.5 0 0 1 4.5 4.5c0 4.08-7.16 11.37-9.5 14.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path></svg>
-            <span className="text-sm">24</span>
-          </button>
-          <button aria-label="Comment" className="flex items-center gap-2 hover:text-foreground transition-colors">
-            <MessageCircle className="size-6 stroke-[1.5]" />
-            <span className="text-sm">12</span>
-          </button>
-        </div>
-        <div className="flex items-center gap-4">
-          <button aria-label="Save" className="hover:text-foreground transition-colors">
-            <Bookmark className="size-6 stroke-[1.5]" />
-          </button>
-          <button aria-label="Share" className="hover:text-foreground transition-colors">
-            <Share2 className="size-6 stroke-[1.5]" />
-          </button>
-          <button aria-label="More" className="hover:text-foreground transition-colors">
-            <MoreHorizontal className="size-6 stroke-[1.5]" />
-          </button>
-        </div>
+        <button
+          onClick={handleShare}
+          className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg border border-border hover:bg-muted"
+          aria-label="Share article"
+        >
+          <Share2 className="size-3.5" />
+          Share
+        </button>
       </div>
 
       {/* Featured Image */}
       {post?.thumbnailUrl && (
-        <motion.figure 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-14"
-        >
+        <figure className="mb-10 -mx-4 sm:mx-0">
           <img
             src={post.thumbnailUrl}
-            alt={post.name}
+            alt={post?.name || "Article image"}
             loading="lazy"
-            className="w-full h-auto max-h-[600px] object-cover rounded-sm"
+            className="w-full h-auto max-h-[520px] object-cover sm:rounded-xl"
           />
-        </motion.figure>
+        </figure>
       )}
 
       {/* Article Body */}
       <div
-        className="prose-content font-serif text-[21px] leading-[1.58] text-[#242424] break-words"
+        className="prose prose-base max-w-none text-foreground
+          prose-headings:font-bold prose-headings:tracking-tight
+          prose-p:leading-relaxed prose-p:text-foreground/90
+          prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+          prose-img:rounded-lg prose-blockquote:border-l-2 prose-blockquote:border-border
+          prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
+          dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: post?.content || "" }}
       />
 
-    </motion.article>
+      {/* Bottom nav */}
+      <div className="mt-16 pt-8 border-t border-border flex items-center justify-between">
+        <Link
+          href="/blogs"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-foreground hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="size-4" />
+          Back to all posts
+        </Link>
+      </div>
+
+    </div>
   );
 }

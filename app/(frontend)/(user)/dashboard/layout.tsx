@@ -7,12 +7,23 @@ import { Sun, Moon, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useUserRole } from "@/lib/firebase/user/read";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, LayoutDashboard, LogOut, ShieldCheck, User as UserIcon } from "lucide-react";
+import Link from "next/link";
 
 function DashboardTopNav() {
   const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const { role } = useUserRole();
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -45,17 +56,67 @@ function DashboardTopNav() {
             {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
           </Button>
         )}
-        {user?.photoURL ? (
-          <img
-            src={user.photoURL}
-            alt="Avatar"
-            className="size-8 rounded-full border-2 border-orange-500/20 object-cover"
-          />
-        ) : (
-          <div className="size-8 rounded-full bg-gradient-to-tr from-orange-500 to-rose-500 flex items-center justify-center text-white font-bold text-xs">
-            {user?.displayName?.charAt(0) || "W"}
-          </div>
-        )}
+        {/* User Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2 h-9 pl-1 pr-3 rounded-full bg-muted/50 hover:bg-muted border border-border transition-all outline-none group">
+            {user?.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt="Avatar"
+                className="size-7 rounded-full object-cover shadow-sm"
+              />
+            ) : (
+              <div className="size-7 rounded-full bg-gradient-to-tr from-orange-500 to-rose-500 flex items-center justify-center text-white font-bold text-[10px]">
+                {user?.displayName?.charAt(0) || "W"}
+              </div>
+            )}
+            <span className="text-xs font-semibold max-w-[90px] truncate hidden sm:block text-foreground">
+              {user?.displayName?.split(" ")[0] || "Writer"}
+            </span>
+            <ChevronDown className="h-3 w-3 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </DropdownMenuTrigger>
+          
+          <DropdownMenuContent align="end" className="w-56 rounded-2xl shadow-xl border-border bg-background p-2 mt-3 animate-in fade-in slide-in-from-top-1 duration-150">
+            <div className="flex flex-col px-3 py-3 mb-1.5 bg-muted/30 rounded-xl border border-border">
+              <span className="text-xs font-bold text-foreground truncate">{user?.displayName || "Writer"}</span>
+              <span className="text-[11px] text-muted-foreground truncate mt-0.5">{user?.email}</span>
+            </div>
+            
+            <DropdownMenuItem className="rounded-xl p-0 focus:bg-muted">
+              <Link 
+                href="/dashboard" 
+                className="flex items-center gap-3 w-full p-2.5 cursor-pointer outline-none"
+              >
+                <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+                <span className="text-xs font-semibold">Writer Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+
+            {role === "admin" && (
+              <DropdownMenuItem className="rounded-xl p-0 focus:bg-muted mt-1">
+                <Link 
+                  href="/admin/dashboard" 
+                  className="flex items-center gap-3 w-full p-2.5 cursor-pointer outline-none"
+                >
+                  <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-semibold">Admin Console</span>
+                </Link>
+              </DropdownMenuItem>
+            )}
+            
+            <DropdownMenuSeparator className="bg-border my-1" />
+            
+            <DropdownMenuItem 
+              onClick={() => { /* Logout is handled in sidebar, but can be added here if needed */ }} 
+              className="rounded-xl p-2.5 cursor-pointer text-red-500 focus:bg-red-500/10 focus:text-red-600 transition-colors"
+            >
+              <div className="flex items-center gap-3 w-full">
+                <LogOut className="h-4 w-4" />
+                <span className="text-xs font-semibold">Sign Out</span>
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

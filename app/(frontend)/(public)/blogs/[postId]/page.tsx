@@ -1,4 +1,5 @@
 import { getPost } from "@/lib/firebase/post/read_server";
+import { getAuthor } from "@/lib/firebase/author/read_server";
 import { Share2, Bookmark, MessageCircle, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -21,8 +22,15 @@ export default async function Page({ params }: { params: any }) {
     );
   }
 
-  // Fallback data for author if not present
-  const authorName = post?.authorName || post?.authorId || "Anonymous";
+  // Fetch author data
+  let authorName = post?.authorName;
+  if (!authorName && post?.authorId) {
+    const author = await getAuthor(post.authorId);
+    if (author && author.name) {
+      authorName = author.name;
+    }
+  }
+  authorName = authorName || post?.authorId || "Anonymous";
   const authorInitials = authorName.substring(0, 2).toUpperCase();
 
   // Convert non-serializable Firestore Timestamp to an ISO string for the Client Component
