@@ -1,22 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import Header from "./components/Header/Header";
 import { ThemeProvider } from "@/components/theme-provider";
+import AuthContextProvider from "@/lib/context/AuthContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "NexusUI - Modern Tech Blog",
-  description: "A premium blog platform exploring the future of web dev and machine learning.",
+  title: "blogPost — Modern Tech Blog",
+  description:
+    "A premium technical publication exploring the cutting edge of web architecture, cloud infrastructure, and developer tooling.",
 };
 
 export default function RootLayout({
@@ -26,17 +27,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans flex flex-col min-h-screen`}>
+      <body
+        className={`${outfit.variable} ${jetbrainsMono.variable} antialiased font-sans flex flex-col min-h-screen`}
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
+          <AuthContextProvider>
             <main className="flex-1 transition-colors duration-300">
               {children}
             </main>
+          </AuthContextProvider>
         </ThemeProvider>
       </body>
     </html>
