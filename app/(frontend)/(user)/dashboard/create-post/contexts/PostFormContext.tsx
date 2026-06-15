@@ -24,10 +24,11 @@ export default function PostFormContextProvider({
 
     const handleData = (key: any, value: any) => {
         setIsDone(false);
-        setData({
-            ...data,
-            [key]: value,
-        })
+        if (key === "multiple") {
+            setData((prev: any) => ({ ...prev, ...value }));
+        } else {
+            setData((prev: any) => ({ ...prev, [key]: value }));
+        }
     }
 
     //create data 
@@ -37,12 +38,14 @@ export default function PostFormContextProvider({
         setIsDone(false);
         try {
             // Stamp author identity onto the post before saving
+            // If the admin already set these via SelectAuthorfield, we respect them.
+            // Otherwise, we fallback to the currently logged in user's details.
             await createNewPost({
                 data: {
                     ...data,
-                    authorEmail: user?.email ?? null,
-                    authorId: user?.uid ?? null,
-                    authorName: user?.displayName ?? null,
+                    authorEmail: data.authorEmail || user?.email || null,
+                    authorId: data.authorId || user?.uid || null,
+                    authorName: data.authorName || user?.displayName || null,
                 }
             });
             setIsDone(true);

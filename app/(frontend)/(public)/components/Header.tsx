@@ -108,13 +108,25 @@ export default function Header() {
                 
                 <DropdownMenuItem className="rounded-xl p-0 focus:bg-zinc-50 dark:focus:bg-zinc-900">
                   <Link 
-                    href={role === "admin" ? "/admin/dashboard" : "/dashboard"} 
+                    href="/dashboard" 
                     className="flex items-center gap-3 w-full p-2.5 cursor-pointer outline-none"
                   >
                     <LayoutDashboard className="h-4 w-4 text-zinc-400" />
-                    <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Dashboard</span>
+                    <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Writer Dashboard</span>
                   </Link>
                 </DropdownMenuItem>
+
+                {role === "admin" && (
+                  <DropdownMenuItem className="rounded-xl p-0 focus:bg-zinc-50 dark:focus:bg-zinc-900 mt-1">
+                    <Link 
+                      href="/admin/dashboard" 
+                      className="flex items-center gap-3 w-full p-2.5 cursor-pointer outline-none"
+                    >
+                      <Sparkles className="h-4 w-4 text-zinc-400" />
+                      <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400">Admin Console</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 
                 <DropdownMenuSeparator className="bg-zinc-100 dark:bg-zinc-900 my-1" />
                 

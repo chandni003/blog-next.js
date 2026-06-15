@@ -22,12 +22,18 @@ export default async function Page({ params }: { params: any }) {
   }
 
   // Fallback data for author if not present
-  const authorName = post?.authorId || "Anonymous";
+  const authorName = post?.authorName || post?.authorId || "Anonymous";
   const authorInitials = authorName.substring(0, 2).toUpperCase();
+
+  // Convert non-serializable Firestore Timestamp to an ISO string for the Client Component
+  const serializedPost = {
+    ...post,
+    timestamp: post?.timestamp?.toDate ? post.timestamp.toDate().toISOString() : null,
+  };
 
   return (
     <main className="min-h-screen bg-background text-foreground transition-colors duration-300 pb-32">
-      <ClientArticle post={post} authorName={authorName} authorInitials={authorInitials} />
+      <ClientArticle post={serializedPost} authorName={authorName} authorInitials={authorInitials} />
     </main>
   );
 }

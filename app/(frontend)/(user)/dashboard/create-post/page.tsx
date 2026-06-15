@@ -3,7 +3,7 @@
 import { useCategories } from "@/lib/firebase/category/read";
 import { usePostForm } from "./contexts/PostFormContext";
 import { useEffect, useState } from "react";
-import { useAuthors } from "@/lib/firebase/author/read";
+import { useUserRole } from "@/lib/firebase/user/read";
 import { RTEfield } from "./components/RTEField";
 import { Button } from "@/components/ui/button";
 import {
@@ -225,9 +225,6 @@ export default function Page() {
               {/* Category */}
               <SelectCategoryfield />
 
-              {/* Author */}
-              <SelectAuthorfield />
-
               {/* Error */}
               {error && (
                 <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-semibold">
@@ -293,7 +290,7 @@ export default function Page() {
               <div className="size-2.5 rounded-full bg-green-400/60" />
             </div>
           </div>
-          <div className="flex-1 p-4">
+          <div className="flex-1 flex flex-col [&_.ql-toolbar]:rounded-none [&_.ql-toolbar]:border-x-0 [&_.ql-toolbar]:border-t-0 [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-border [&_.ql-toolbar]:bg-muted/10 [&_.ql-container]:border-none [&_.ql-container]:flex-1 [&_.ql-container]:text-sm [&_.ql-editor]:min-h-[500px] [&_.ql-editor]:p-6">
             <RTEfield />
           </div>
         </div>
@@ -321,32 +318,6 @@ function SelectCategoryfield() {
       >
         <option value="">Select a Category</option>
         {categories?.map((item: any) => (
-          <option key={item?.id} value={item?.id}>{item?.name}</option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
-function SelectAuthorfield() {
-  const { data, handleData } = usePostForm();
-  const { data: author } = useAuthors();
-
-  return (
-    <div className="space-y-1.5">
-      <label htmlFor="author" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
-        <User className="size-3" /> Author <span className="text-orange-500">*</span>
-      </label>
-      <select
-        name="author"
-        id="author"
-        value={data?.authorId || ""}
-        onChange={(e) => handleData("authorId", e.target.value)}
-        required
-        className="w-full bg-muted/30 border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all appearance-none cursor-pointer"
-      >
-        <option value="">Select an Author</option>
-        {author?.map((item: any) => (
           <option key={item?.id} value={item?.id}>{item?.name}</option>
         ))}
       </select>

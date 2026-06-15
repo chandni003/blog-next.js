@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useUserRole } from "@/lib/firebase/user/read";
+import { ShieldCheck } from "lucide-react";
 
 const links = [
   { name: "Overview", link: "/dashboard", icon: LayoutDashboard },
@@ -17,6 +19,7 @@ const links = [
 export default function WriterSidebar() {
   const pathname = usePathname();
   const { user, handleLogout } = useAuth();
+  const { role } = useUserRole();
 
   return (
     <>
@@ -66,6 +69,20 @@ export default function WriterSidebar() {
                 );
               })}
             </nav>
+
+            {role === "admin" && (
+              <div className="mt-8 px-4">
+                <Link href="/admin/dashboard" passHref>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-3 px-4 py-5 text-sm font-bold text-muted-foreground hover:text-primary border-border hover:border-primary/30 transition-all rounded-xl shadow-sm"
+                  >
+                    <ShieldCheck className="size-4" />
+                    Admin Console
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* User Account Footer */}

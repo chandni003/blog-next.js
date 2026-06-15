@@ -129,28 +129,34 @@
 
 "use client";
 
-import { Gauge, LayoutList, User, Layers2, ShieldCheck, Settings, LogOut, Users } from "lucide-react";
+import { Gauge, LayoutList, User, Layers2, ShieldCheck, Settings, LogOut, Users, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useState } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, handleLogout } = useAuth();
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const links = [
     { name: "Dashboard", link: "/admin/dashboard", icon: <Gauge /> },
     { name: "Posts", link: "/admin/posts", icon: <LayoutList /> },
     { name: "Categories", link: "/admin/categories", icon: <Layers2 /> },
     { name: "Authors", link: "/admin/authors", icon: <User /> },
-    { name: "Writers", link: "/admin/writers", icon: <Users /> },
+    { name: "Users", link: "/admin/users", icon: <Users /> },
+    { name: "Requests", link: "/admin/writers", icon: <Users /> },
   ];
 
   return (
-    <aside className="hidden border-r border-border bg-card/30 backdrop-blur-md text-foreground lg:flex flex-col w-[280px] sticky top-0 h-screen transition-all duration-300">
-      <div className="flex h-full flex-col">
+    <>
+      {/* ─── Desktop Sidebar ─────────────────────────────────────── */}
+      <aside className="hidden border-r border-border bg-card/30 backdrop-blur-md text-foreground lg:flex flex-col w-[280px] sticky top-0 h-screen transition-all duration-300">
+        <div className="flex h-full flex-col">
 
         {/* Sidebar Brand Header */}
         <div className="flex h-16 items-center px-8 border-b border-border">
@@ -190,6 +196,18 @@ export default function Sidebar() {
                 );
               })}
             </nav>
+
+            <div className="mt-8 px-4">
+              <Link href="/dashboard" passHref>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-3 px-4 py-5 text-sm font-bold text-muted-foreground hover:text-primary border-border hover:border-primary/30 transition-all rounded-xl shadow-sm"
+                >
+                  <LayoutList className="size-4" />
+                  Writer Dashboard
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -218,8 +236,92 @@ export default function Sidebar() {
             </Button>
           </div>
         </div>
+      </aside>
+
+      {/* ─── Mobile Top Header & Menu ────────────────────────────── */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border shadow-sm">
+        <div className="flex items-center justify-between h-16 px-4">
+          <Link href="/admin/dashboard" className="flex items-center gap-2">
+            <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+              <ShieldCheck className="size-4 text-primary" />
+            </div>
+            <span className="font-bold tracking-tight text-foreground">Admin Console</span>
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="text-foreground"
+          >
+            {isMobileMenuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+          </Button>
+        </div>
+
+        {/* Mobile Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-16 left-0 right-0 bg-background border-b border-border shadow-xl animate-in slide-in-from-top-2 duration-200">
+            <nav className="flex flex-col p-4 space-y-2 max-h-[80vh] overflow-y-auto">
+              {links.map((item) => {
+                const isActive = pathname === item.link || pathname.startsWith(item.link + "/");
+                return (
+                  <Link key={item.link} href={item.link} passHref>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        "w-full justify-start gap-4 px-4 py-6 text-sm font-medium rounded-xl transition-colors",
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      <span className={cn("shrink-0 [&_svg]:size-5", isActive ? "text-primary" : "text-muted-foreground")}>
+                        {item.icon}
+                      </span>
+                      {item.name}
+                    </Button>
+                  </Link>
+                );
+              })}
+
+              <div className="pt-4 mt-2 border-t border-border">
+                <Link href="/dashboard" passHref>
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full justify-start gap-3 px-4 py-5 text-sm font-bold rounded-xl"
+                  >
+                    <LayoutList className="size-4" />
+                    Switch to Writer Dashboard
+                  </Button>
+                </Link>
+              </div>
+
+              <div className="pt-4 mt-2 border-t border-border flex justify-between items-center px-2">
+                <div className="flex items-center gap-3">
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt="Admin" className="size-8 rounded-full" />
+                  ) : (
+                    <div className="size-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs">
+                      {user?.displayName?.charAt(0) || "A"}
+                    </div>
+                  )}
+                  <span className="text-sm font-bold text-foreground truncate max-w-[150px]">{user?.displayName || "Admin"}</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleLogout}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <LogOut className="size-4" />
+                </Button>
+              </div>
+            </nav>
+          </div>
+        )}
       </div>
-    </aside>
+    </>
   );
 }
 

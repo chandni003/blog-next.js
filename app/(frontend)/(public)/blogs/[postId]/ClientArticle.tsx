@@ -38,7 +38,7 @@ export function ClientArticle({ post, authorName, authorInitials }: { post: any,
             <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
               <span>5 min read</span>
               <span>·</span>
-              <span>{post?.timestamp?.toDate()?.toLocaleDateString() || "Recently"}</span>
+              <span>{post?.timestamp ? new Date(post.timestamp).toLocaleDateString() : "Recently"}</span>
             </div>
           </div>
         </div>

@@ -38,8 +38,7 @@ export default function AdminDashboard() {
     { label: "Pending Writers", value: requestsLoading ? "—" : pendingRequests, icon: UserCheck, color: "text-amber-500", bg: "bg-amber-500/10", href: "/admin/writers" },
   ];
 
-  return (
-    <main className="min-h-screen w-full bg-background p-6 lg:p-10 text-foreground transition-colors duration-300">
+    <main className="min-h-screen w-full bg-background p-6 pt-24 lg:p-10 text-foreground transition-colors duration-300">
 
       {/* Welcome Header */}
       <header className="mb-10">
