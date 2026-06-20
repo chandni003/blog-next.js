@@ -22,7 +22,7 @@ export default async function PostListView() {
 
 export function PostCard({ post }: { post: any }) {
   return (
-    <Link href={`/posts/${post?.id}`}>
+    <Link href={`/blogs/${post?.slug || post?.id}`}>
       <div className="p-5 rounded border border-slate-600">
       {/* <div className="relative"> */}
         {/* <div className="absolute flex justify-end w-full p-3"> */}

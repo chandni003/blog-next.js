@@ -101,7 +101,13 @@ export default function AdminDashboard() {
                     <p className="text-sm font-semibold text-foreground truncate">{post.name}</p>
                     <p className="text-[11px] text-muted-foreground">{post.timestamp?.toDate()?.toLocaleDateString()}</p>
                   </div>
-                  <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded-full shrink-0">Live</span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                    post.status === "draft"
+                      ? "bg-zinc-500/10 text-zinc-500"
+                      : "bg-emerald-500/10 text-emerald-600"
+                  }`}>
+                    {post.status === "draft" ? "Draft" : "Live"}
+                  </span>
                 </div>
               ))}
             </div>

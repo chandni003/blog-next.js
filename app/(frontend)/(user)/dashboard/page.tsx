@@ -215,8 +215,12 @@ export default function DashboardOverview() {
                         </div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-bold px-3 py-1 bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 rounded-full shrink-0 ml-2">
-                      Published
+                    <span className={`text-[10px] font-bold px-3 py-1 rounded-full shrink-0 ml-2 ${
+                      post.status === "draft"
+                        ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400"
+                        : "bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400"
+                    }`}>
+                      {post.status === "draft" ? "Draft" : "Published"}
                     </span>
                   </div>
                 );

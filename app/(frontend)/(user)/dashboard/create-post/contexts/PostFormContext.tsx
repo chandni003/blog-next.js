@@ -22,7 +22,7 @@ export default function PostFormContextProvider({
     const [isloading, setIsLoading] = useState<any>(false);
     const [error, setError] = useState<any>(null);
     const [isdone, setIsDone] = useState<any>(false);
-    // const [image,setImage] = useState<File | any>(null);
+    const [lastAction, setLastAction] = useState<"published" | "draft" | null>(null);
 
     const handleData = (key: any, value: any) => {
         setIsDone(false);
@@ -48,7 +48,10 @@ export default function PostFormContextProvider({
                     authorName: data.authorName || authorProfile?.name || user?.displayName || null,
                 }
             });
+            setLastAction(status as "published" | "draft");
             setIsDone(true);
+            // Auto-redirect to my-posts after 1.5s
+            setTimeout(() => router.push("/dashboard/my-posts"), 1500);
         } catch (error: any) {
             setError(error?.message);
         }
@@ -85,7 +88,10 @@ export default function PostFormContextProvider({
         setIsDone(false);
         try {
             await createUpdatePost({ data: status ? { ...data, status } : data });
+            setLastAction((status || data?.status || "published") as "published" | "draft");
             setIsDone(true);
+            // Auto-redirect to my-posts after 1.5s
+            setTimeout(() => router.push("/dashboard/my-posts"), 1500);
         } catch (error: any) {
             setError(error?.message);
         }
@@ -114,21 +120,17 @@ export default function PostFormContextProvider({
     return <PostFormContext.Provider
         value={{
             data,
-            //   image,
-            //   setImage,
             isloading,
             error,
             isdone,
+            lastAction,
             handleCreate,
             handleData,
             handleUpdate,
             handleDelete,
             updatePostId,
             fetchData,
-
-
         }}>{children}
-
     </PostFormContext.Provider>
 
 }

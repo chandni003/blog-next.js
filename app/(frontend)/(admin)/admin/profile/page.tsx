@@ -6,7 +6,7 @@ import { useUserRole } from "@/lib/firebase/user/read";
 import { useAuthorProfile } from "@/lib/firebase/author/read";
 import { UpdateAuthor } from "@/lib/firebase/author/write";
 import { useState, useEffect } from "react";
-import { Mail, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
+import { Mail, ShieldCheck, CheckCircle2, ArrowRight, User, Lock } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminProfile() {
@@ -124,6 +124,32 @@ export default function AdminProfile() {
             </div>
             
             <div className="p-6 space-y-6">
+              
+              {/* Read-Only Official Identity */}
+              <div className="p-4 bg-muted/30 rounded-xl border border-border space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lock className="size-3 text-muted-foreground" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Official Registration Details</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                      <User className="size-3" /> Full Legal Name
+                    </label>
+                    <div className="h-10 px-3 bg-muted/50 border border-border rounded-lg flex items-center text-sm font-medium text-muted-foreground cursor-not-allowed">
+                      {user?.displayName || "N/A"}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                      <Mail className="size-3" /> Corporate Email
+                    </label>
+                    <div className="h-10 px-3 bg-muted/50 border border-border rounded-lg flex items-center text-sm font-medium text-muted-foreground cursor-not-allowed">
+                      {user?.email || "N/A"}
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Display Name</label>

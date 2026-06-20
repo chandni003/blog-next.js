@@ -21,7 +21,7 @@ import { ChevronDown, LayoutDashboard, LogOut, ShieldCheck, User as UserIcon } f
 import Link from "next/link";
 
 function DashboardTopNav() {
-  const { user } = useAuth();
+  const { user, handleLogout } = useAuth();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
@@ -108,7 +108,7 @@ function DashboardTopNav() {
             <DropdownMenuSeparator className="bg-border my-1" />
             
             <DropdownMenuItem 
-              onClick={() => { /* Logout is handled in sidebar, but can be added here if needed */ }} 
+              onClick={handleLogout} 
               className="rounded-xl p-2.5 cursor-pointer text-red-500 focus:bg-red-500/10 focus:text-red-600 transition-colors"
             >
               <div className="flex items-center gap-3 w-full">

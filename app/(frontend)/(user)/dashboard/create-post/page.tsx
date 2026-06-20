@@ -4,6 +4,8 @@ import { useCategories } from "@/lib/firebase/category/read";
 import { usePostForm } from "./contexts/PostFormContext";
 import { useEffect, useState } from "react";
 import { useUserRole } from "@/lib/firebase/user/read";
+import { useAuth } from "@/lib/context/AuthContext";
+import { useAuthorProfile } from "@/lib/firebase/author/read";
 import { RTEfield } from "./components/RTEField";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +22,7 @@ import {
   X,
   ArrowLeft,
   Clock,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -30,6 +33,7 @@ export default function Page() {
     isloading,
     error,
     isdone,
+    lastAction,
     handleCreate,
     handleUpdate,
     handleDelete,
@@ -37,6 +41,10 @@ export default function Page() {
     updatePostId,
     fetchData,
   } = usePostForm();
+
+  const { user } = useAuth();
+  const { data: authorProfile, isLoading: profileLoading } = useAuthorProfile(user?.uid);
+  const hasDisplayName = !profileLoading && !!authorProfile?.name?.trim();
 
   const [isUploading, setIsUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -77,6 +85,61 @@ export default function Page() {
 
   const isEditMode = !!updatePostId;
   const isProcessing = isloading || isUploading;
+
+  // ── Display Name Gate ──────────────────────────────────────
+  if (profileLoading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="size-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!hasDisplayName) {
+    return (
+      <div className="w-full max-w-lg mx-auto">
+        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-border bg-amber-500/5 flex items-start gap-4">
+            <div className="size-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
+              <AlertTriangle className="size-5 text-amber-500" />
+            </div>
+            <div>
+              <h2 className="text-base font-black tracking-tight text-foreground">Display Name Required</h2>
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                You need to set a public display name before you can publish posts. This name will appear on all your stories.
+              </p>
+            </div>
+          </div>
+
+          {/* Body */}
+          <div className="p-6 space-y-4">
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/40 border border-border">
+              <div className="size-9 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
+                <User className="size-4 text-muted-foreground" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Signed in as</p>
+                <p className="text-sm font-semibold text-foreground truncate">{user?.email}</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              Go to <strong>Profile Settings</strong> → set your <strong>Display Name</strong> → come back and start writing.
+            </p>
+
+            <Link href="/dashboard/profile">
+              <Button className="w-full h-10 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm border-none shadow-lg shadow-orange-500/20 gap-2">
+                <User className="size-4" />
+                Set Up My Profile
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  // ── End Gate ────────────────────────────────────────────────
 
   return (
     <div className="w-full max-w-7xl">
@@ -300,9 +363,16 @@ export default function Page() {
                 )}
 
                 {isdone && (
-                  <div className="flex items-center justify-center gap-2 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 font-bold text-sm animate-in zoom-in-95">
+                  <div className={`flex items-center justify-center gap-2 p-4 rounded-xl font-bold text-sm animate-in zoom-in-95 ${
+                    lastAction === "draft"
+                      ? "bg-zinc-500/10 border border-zinc-500/20 text-zinc-600 dark:text-zinc-400"
+                      : "bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400"
+                  }`}>
                     <CheckCircle2 className="size-5" />
-                    {isEditMode ? "Post Updated!" : "Post Published!"}
+                    {lastAction === "draft" 
+                      ? "Draft saved! Redirecting..."
+                      : isEditMode ? "Post published! Redirecting..." : "Post published! Redirecting..."
+                    }
                   </div>
                 )}
               </div>
@@ -323,7 +393,7 @@ export default function Page() {
               <div className="size-2.5 rounded-full bg-green-400/60" />
             </div>
           </div>
-          <div className="flex-1 flex flex-col [&_.ql-toolbar]:rounded-none [&_.ql-toolbar]:border-x-0 [&_.ql-toolbar]:border-t-0 [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-border [&_.ql-toolbar]:bg-muted/10 [&_.ql-container]:border-none [&_.ql-container]:flex-1 [&_.ql-container]:text-sm [&_.ql-editor]:min-h-[500px] [&_.ql-editor]:p-6">
+          <div className="flex-1 flex flex-col">
             <RTEfield />
           </div>
         </div>

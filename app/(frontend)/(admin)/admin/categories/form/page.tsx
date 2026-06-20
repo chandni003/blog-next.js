@@ -3,15 +3,15 @@
 import { useCategoryForm } from "./contexts/categoryFormContext";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { 
-  Layers, 
-  Trash2, 
-  CheckCircle2, 
-  Type, 
-  Link2, 
-  Sparkles,
+import {
+  Layers,
+  Trash2,
+  CheckCircle2,
+  Type,
+  Link2,
   ArrowLeft,
-  Loader2 
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -36,40 +36,57 @@ export default function Page() {
   }, [updateCategoryId]);
 
   return (
-    <main className="min-h-screen w-full p-6 lg:p-10 transition-colors duration-300">
-      
-      {/* Top Navigation / Header */}
-      <div className="max-w-2xl mx-auto mb-10">
-        <Link href="/admin/categories" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs font-bold uppercase tracking-widest mb-6 group">
-           <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" /> Back to Categories
-        </Link>
-        
-        <div className="flex justify-between items-center bg-card p-8 rounded-[2rem] border border-border shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="size-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <Layers className="text-primary size-7" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">{updateCategoryId ? "Edit Category" : "New Category"}</h1>
-              <p className="text-sm text-muted-foreground font-medium">Control content grouping and taxonomy</p>
-            </div>
-          </div>
+    <main className="flex min-h-screen flex-col gap-8 p-6 lg:p-10">
 
-          <div className="hidden sm:block">
-            {updateCategoryId ? (
-              <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-full">
-                <Sparkles className="size-3" /> Update Mode
-              </span>
-            ) : (
-              <span className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-full">
-                <CheckCircle2 className="size-3" /> Creation Mode
-              </span>
-            )}
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/admin/categories"
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors group"
+          >
+            <ArrowLeft className="size-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            Back
+          </Link>
+          <div className="w-px h-4 bg-border" />
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-foreground">
+              {updateCategoryId ? "Edit Category" : "New Category"}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {updateCategoryId
+                ? "Update category name and URL slug"
+                : "Create a new content category"}
+            </p>
           </div>
         </div>
+
+        <span
+          className={`hidden md:flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg border ${
+            updateCategoryId
+              ? "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+              : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+          }`}
+        >
+          <Layers className="size-3" />
+          {updateCategoryId ? "Update Mode" : "Create Mode"}
+        </span>
       </div>
 
-      <section className="max-w-2xl mx-auto">
+      {/* Form Card */}
+      <div className="bg-card border border-border rounded-xl overflow-hidden max-w-2xl">
+
+        {/* Card header strip */}
+        <div className="px-6 py-4 border-b border-border flex items-center gap-3 bg-muted/20">
+          <div className="size-7 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Layers className="size-3.5 text-primary" />
+          </div>
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            Category Details
+          </span>
+        </div>
+
+        {/* Form body */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -79,95 +96,119 @@ export default function Page() {
               handleCreate();
             }
           }}
-          className="flex flex-col gap-8 bg-card border border-border p-8 lg:p-12 rounded-[2.5rem] shadow-xl relative overflow-hidden"
+          className="p-6 flex flex-col gap-5"
         >
-          {/* Subtle Background Glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -z-10" />
-
-          <div className="space-y-6">
-            {/* Category Name */}
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
-                <Type className="size-3 text-primary" /> Display Name <span className="text-destructive">*</span>
-              </label>
-              <input
-                type="text"
-                onChange={(e) => {
-                  e.preventDefault();
-                  handleData("name", e.target.value);
-                }}
-                value={data?.name || ""}
-                required
-                placeholder="e.g. Artificial Intelligence"
-                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30 font-medium"
-              />
-            </div>
-
-            {/* Category Slug */}
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
-                <Link2 className="size-3 text-primary" /> URL Slug <span className="text-destructive">*</span>
-              </label>
-              <input
-                type="text"
-                onChange={(e) => {
-                  e.preventDefault();
-                  handleData("slug", e.target.value);
-                }}
-                value={data?.slug || ""}
-                required
-                placeholder="ai-and-future"
-                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30 font-medium font-mono"
-              />
-            </div>
+          {/* Display Name */}
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+              <Type className="size-3 text-primary" />
+              Display Name <span className="text-destructive">*</span>
+            </label>
+            <input
+              type="text"
+              onChange={(e) => {
+                e.preventDefault();
+                handleData("name", e.target.value);
+              }}
+              value={data?.name || ""}
+              required
+              placeholder="e.g. Artificial Intelligence"
+              className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/40 font-medium"
+            />
           </div>
 
+          {/* URL Slug */}
+          <div className="flex flex-col gap-2">
+            <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+              <Link2 className="size-3 text-primary" />
+              URL Slug <span className="text-destructive">*</span>
+            </label>
+            <input
+              type="text"
+              onChange={(e) => {
+                e.preventDefault();
+                handleData("slug", e.target.value);
+              }}
+              value={data?.slug || ""}
+              required
+              placeholder="ai-and-future"
+              className="w-full bg-background border border-border rounded-lg px-4 py-2.5 text-sm text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/40"
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Used in URLs, e.g.{" "}
+              <span className="font-mono text-foreground/60">/blogs?category=ai-and-future</span>
+            </p>
+          </div>
+
+          {/* Error */}
           {error && (
-            <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-xs font-bold animate-in fade-in slide-in-from-top-2">
+            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs font-semibold animate-in fade-in slide-in-from-top-1">
+              <AlertCircle className="size-4 shrink-0" />
               {error}
             </div>
           )}
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            {!isdone && (
-              <Button
-                type="submit"
-                disabled={isloading}
-                className="flex-1 rounded-2xl py-8 font-bold text-md shadow-xl shadow-primary/10 transition-all hover:scale-[1.01] active:scale-[0.99]"
-              >
-                {isloading ? (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="size-5 animate-spin" />
-                    Processing...
-                  </div>
-                ) : updateCategoryId ? "Apply Configuration" : "Deploy new category"}
-              </Button>
-            )}
-
-            {updateCategoryId && !isdone && (
-              <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleDelete(updateCategoryId);
-                }}
-                variant="destructive"
-                disabled={isloading}
-                className="rounded-2xl py-8 px-8 font-bold shadow-xl shadow-destructive/10"
-              >
-                <Trash2 className="size-5" />
-              </Button>
-            )}
-          </div>
-
+          {/* Success */}
           {isdone && (
-            <div className="flex items-center justify-center gap-3 p-8 rounded-[1.5rem] bg-primary/10 border border-primary/20 text-primary font-bold animate-in zoom-in duration-500 shadow-inner">
-              <CheckCircle2 className="size-6" />
-              Category {updateCategoryId ? "Updated" : "Generated"} Successfully
+            <div className="flex items-center gap-2.5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold animate-in zoom-in duration-300">
+              <CheckCircle2 className="size-4 shrink-0" />
+              Category {updateCategoryId ? "updated" : "created"} successfully
             </div>
           )}
+
+          {/* Divider */}
+          <div className="border-t border-border pt-4">
+            {/* Action buttons */}
+            {!isdone && (
+              <div className="flex items-center gap-3">
+                <Button
+                  type="submit"
+                  disabled={isloading}
+                  className="flex items-center gap-2 h-9 px-5 bg-foreground text-background text-sm font-semibold rounded-lg hover:opacity-85 transition-opacity"
+                >
+                  {isloading ? (
+                    <>
+                      <Loader2 className="size-3.5 animate-spin" />
+                      {updateCategoryId ? "Updating..." : "Creating..."}
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="size-3.5" />
+                      {updateCategoryId ? "Update Category" : "Create Category"}
+                    </>
+                  )}
+                </Button>
+
+                {updateCategoryId && (
+                  <Button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleDelete(updateCategoryId);
+                    }}
+                    variant="ghost"
+                    disabled={isloading}
+                    className="flex items-center gap-2 h-9 px-4 text-sm font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive rounded-lg transition-colors"
+                  >
+                    <Trash2 className="size-3.5" />
+                    Delete
+                  </Button>
+                )}
+
+                <Link href="/admin/categories">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-9 px-4 text-sm font-semibold text-muted-foreground hover:text-foreground rounded-lg"
+                  >
+                    Cancel
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </form>
-      </section>
+      </div>
     </main>
   );
 }

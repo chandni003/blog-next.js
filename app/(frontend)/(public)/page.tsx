@@ -252,7 +252,7 @@ export default function BlogHome() {
                 </div>
               ) : categories && categories.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {categories.map((cat: any) => (
+                  {categories.slice(0, 9).map((cat: any) => (
                     <Link
                       key={cat.id || cat.name}
                       href={`/blogs?category=${cat.id || cat.slug}`}
@@ -261,11 +261,20 @@ export default function BlogHome() {
                       {cat.name}
                     </Link>
                   ))}
+                  {categories.length > 9 && (
+                    <Link
+                      href="/blogs"
+                      className="px-4 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground bg-transparent hover:bg-muted rounded-full border border-dashed border-border/60 transition-colors"
+                    >
+                      +{categories.length - 9} more
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground italic">No topics yet.</p>
               )}
             </div>
+
 
             {/* Footer Links */}
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-muted-foreground/60 font-medium">

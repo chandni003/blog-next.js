@@ -17,7 +17,7 @@ export function ClientArticle({ post, authorName, authorInitials }: { post: any;
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 max-w-[720px] pt-8 pb-24">
+    <div className="container mx-auto px-4 sm:px-6 max-w-[720px] pt-8 pb-24 overflow-x-hidden">
 
       {/* Back nav */}
       <div className="mb-8">
@@ -97,7 +97,9 @@ export function ClientArticle({ post, authorName, authorInitials }: { post: any;
           prose-a:text-primary prose-a:no-underline hover:prose-a:underline
           prose-img:rounded-lg prose-blockquote:border-l-2 prose-blockquote:border-border
           prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-          dark:prose-invert"
+          dark:prose-invert
+          [&>*]:break-words [&>p]:overflow-hidden"
+        style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
         dangerouslySetInnerHTML={{ __html: post?.content || "" }}
       />
 

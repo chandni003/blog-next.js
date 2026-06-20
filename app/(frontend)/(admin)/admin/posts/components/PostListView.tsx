@@ -1,8 +1,7 @@
 "use client";
 
-import { usePost } from "@/lib/firebase/post/read";
 import Link from "next/link";
-import { Edit3, ExternalLink, FileText, BookOpen, Loader2, AlertCircle } from "lucide-react";
+import { Edit3, ExternalLink, FileText, BookOpen, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function PostListView({ data, error, isloading }: { data: any[], error: any, isloading: boolean }) {
@@ -88,7 +87,7 @@ export default function PostListView({ data, error, isloading }: { data: any[], 
 
           {/* Action */}
           <Link
-            href={`/admin/posts/form?id=${item?.id}`}
+            href={`/dashboard/create-post?id=${item?.slug || item?.id}`}
             className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground border border-border hover:border-foreground/20 px-3 py-1.5 rounded-lg transition-all w-fit"
           >
             <Edit3 className="size-3" />

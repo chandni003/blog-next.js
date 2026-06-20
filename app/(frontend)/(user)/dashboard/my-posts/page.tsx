@@ -61,7 +61,7 @@ export default function MyPostsPage() {
         <div>
           <h1 className="text-2xl font-black tracking-tight">My Posts</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {myPosts.length} post{myPosts.length !== 1 ? "s" : ""} published
+            {myPosts.length} post{myPosts.length !== 1 ? "s" : ""} total
           </p>
         </div>
         <Link href="/dashboard/create-post">
@@ -240,17 +240,19 @@ export default function MyPostsPage() {
 
                     {/* Actions */}
                     <div className="flex items-center justify-center gap-1.5 w-24">
-                      {/* View */}
-                      <Link href={`/blogs/${post.slug || post.id}`} target="_blank">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-8 rounded-full text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10"
-                          title="View post"
-                        >
-                          <ExternalLink className="size-4" />
-                        </Button>
-                      </Link>
+                      {/* View — only for published posts */}
+                      {post.status !== "draft" && (
+                        <Link href={`/blogs/${post.slug || post.id}`} target="_blank">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-8 rounded-full text-muted-foreground hover:text-blue-500 hover:bg-blue-500/10"
+                            title="View post"
+                          >
+                            <ExternalLink className="size-4" />
+                          </Button>
+                        </Link>
+                      )}
 
                       {/* Edit → goes to create-post with ?id= */}
                       <Link href={`/dashboard/create-post?id=${post.slug || post.id}`}>
