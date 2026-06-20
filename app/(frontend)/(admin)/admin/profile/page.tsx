@@ -3,7 +3,9 @@
 import { useAuth } from "@/lib/context/AuthContext";
 import { useUserPosts } from "@/lib/firebase/post/read";
 import { useUserRole } from "@/lib/firebase/user/read";
-import { useState } from "react";
+import { useAuthorProfile } from "@/lib/firebase/author/read";
+import { UpdateAuthor } from "@/lib/firebase/author/write";
+import { useState, useEffect } from "react";
 import { Mail, ShieldCheck, CheckCircle2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -11,22 +13,53 @@ export default function AdminProfile() {
   const { user } = useAuth();
   const { role } = useUserRole();
   const { data: posts, isloading: postsLoading } = useUserPosts(user?.email);
+  const { data: authorProfile, isLoading: profileLoading } = useAuthorProfile(user?.uid);
   
   const [isUpdating, setIsUpdating] = useState(false);
   const [formData, setFormData] = useState({
-    displayName: user?.displayName || "",
+    displayName: "",
     bio: "",
     twitter: "",
+    linkedin: "",
+    github: "",
   });
+
+  useEffect(() => {
+    if (authorProfile) {
+      setFormData({
+        displayName: authorProfile.name || user?.displayName || "",
+        bio: authorProfile.biography || "",
+        twitter: authorProfile.socialLinks?.twitter || "",
+        linkedin: authorProfile.socialLinks?.linkedin || "",
+        github: authorProfile.socialLinks?.github || "",
+      });
+    }
+  }, [authorProfile, user?.displayName]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
     setIsUpdating(true);
-    // Simulate update
-    setTimeout(() => {
-      setIsUpdating(false);
+    try {
+      await UpdateAuthor({
+        uid: user.uid,
+        data: {
+          name: formData.displayName.trim(),
+          biography: formData.bio.trim(),
+          socialLinks: {
+            twitter: formData.twitter.trim(),
+            linkedin: formData.linkedin.trim(),
+            github: formData.github.trim(),
+          },
+        },
+      });
       alert("Author profile updated successfully!");
-    }, 800);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to update profile.");
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -119,16 +152,27 @@ export default function AdminProfile() {
                 <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                   Social Links <span className="text-muted-foreground/50 lowercase tracking-normal font-medium">(Optional)</span>
                 </label>
-                <div className="relative">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium text-sm">
-                    twitter.com/
-                  </div>
-                  <input 
-                    type="text" 
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input
+                    type="text"
                     value={formData.twitter}
-                    onChange={(e) => setFormData({...formData, twitter: e.target.value})}
-                    className="w-full h-11 pl-[96px] pr-4 bg-transparent border border-border rounded-lg text-sm focus:outline-none focus:border-foreground/30 transition-all"
-                    placeholder="username"
+                    onChange={(e) => setFormData({ ...formData, twitter: e.target.value })}
+                    className="w-full h-11 px-4 bg-transparent border border-border rounded-lg text-sm focus:outline-none focus:border-foreground/30 transition-all"
+                    placeholder="Twitter Handle"
+                  />
+                  <input
+                    type="text"
+                    value={formData.linkedin}
+                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    className="w-full h-11 px-4 bg-transparent border border-border rounded-lg text-sm focus:outline-none focus:border-foreground/30 transition-all"
+                    placeholder="LinkedIn URL"
+                  />
+                  <input
+                    type="text"
+                    value={formData.github}
+                    onChange={(e) => setFormData({ ...formData, github: e.target.value })}
+                    className="w-full h-11 px-4 bg-transparent border border-border rounded-lg text-sm focus:outline-none focus:border-foreground/30 transition-all"
+                    placeholder="GitHub Username"
                   />
                 </div>
               </div>

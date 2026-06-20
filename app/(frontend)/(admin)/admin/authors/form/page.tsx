@@ -92,33 +92,92 @@ export default function Page() {
           className="flex flex-col gap-8 bg-card border border-border p-8 lg:p-12 rounded-[2.5rem] shadow-xl relative overflow-hidden"
         >
           {/* Form Fields */}
-          <div className="space-y-6">
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
-                <User className="size-3 text-primary" /> Full Legal Name <span className="text-destructive">*</span>
-              </label>
-              <input
-                type="text"
-                onChange={(e) => handleData("name", e.target.value)}
-                value={data?.name || ""}
-                required
-                placeholder="e.g. Alexander Pierce"
-                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30 font-medium"
-              />
+          <div className="space-y-8">
+            
+            {/* Frozen Details (Read-only) */}
+            <div className="space-y-5 p-6 bg-muted/20 border border-border rounded-2xl">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Official Registration Details</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                    <User className="size-3 text-muted-foreground/60" /> Full Legal Name
+                  </label>
+                  <div className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm text-muted-foreground font-medium cursor-not-allowed">
+                    {data?.officialName || "N/A"}
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+                    <Mail className="size-3 text-muted-foreground/60" /> Corporate Email
+                  </label>
+                  <div className="w-full bg-muted/50 border border-border rounded-xl px-4 py-3 text-sm text-muted-foreground font-medium cursor-not-allowed">
+                    {data?.email || "N/A"}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
-                <Mail className="size-3 text-primary" /> Corporate Email <span className="text-destructive">*</span>
-              </label>
-              <input
-                type="email"
-                onChange={(e) => handleData("email", e.target.value)}
-                value={data?.email || ""}
-                required
-                placeholder="alexander@nexusui.com"
-                className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30 font-medium"
-              />
+            {/* Editable Author Profile */}
+            <div className="space-y-6">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-foreground mb-2">Public Profile Configuration</h3>
+              
+              <div className="flex flex-col gap-3">
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
+                  <User className="size-3 text-primary" /> Display Name <span className="text-destructive">*</span>
+                </label>
+                <input
+                  type="text"
+                  onChange={(e) => handleData("name", e.target.value)}
+                  value={data?.name || ""}
+                  required
+                  placeholder="e.g. Alex"
+                  className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30 font-medium"
+                />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
+                  Biography
+                </label>
+                <textarea
+                  rows={4}
+                  onChange={(e) => handleData("biography", e.target.value)}
+                  value={data?.biography || ""}
+                  placeholder="Tell us about the author..."
+                  className="w-full bg-background border border-border rounded-2xl px-6 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30 font-medium resize-none"
+                />
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
+                  Social Links
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <input
+                    type="text"
+                    onChange={(e) => handleData("socialLinks", { ...data?.socialLinks, twitter: e.target.value })}
+                    value={data?.socialLinks?.twitter || ""}
+                    placeholder="Twitter Handle"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30"
+                  />
+                  <input
+                    type="text"
+                    onChange={(e) => handleData("socialLinks", { ...data?.socialLinks, linkedin: e.target.value })}
+                    value={data?.socialLinks?.linkedin || ""}
+                    placeholder="LinkedIn URL"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30"
+                  />
+                  <input
+                    type="text"
+                    onChange={(e) => handleData("socialLinks", { ...data?.socialLinks, github: e.target.value })}
+                    value={data?.socialLinks?.github || ""}
+                    placeholder="GitHub Username"
+                    className="w-full bg-background border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground/30"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 

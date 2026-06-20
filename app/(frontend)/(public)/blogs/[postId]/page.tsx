@@ -9,7 +9,7 @@ export default async function Page({ params }: { params: any }) {
   const { postId } = await params;
   const post = await getPost(postId);
 
-  if (!post) {
+  if (!post || post.status !== "published") {
     return (
       <main className="min-h-screen flex items-center justify-center p-10 bg-background text-foreground">
         <div className="text-center space-y-6">

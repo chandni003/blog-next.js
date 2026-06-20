@@ -3,9 +3,9 @@
 import { usePost } from "@/lib/firebase/post/read";
 import Link from "next/link";
 import { Edit3, ExternalLink, FileText, BookOpen, Loader2, AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default function PostListView() {
-  const { data, error, isloading } = usePost();
+export default function PostListView({ data, error, isloading }: { data: any[], error: any, isloading: boolean }) {
 
   if (isloading) {
     return (
@@ -70,10 +70,20 @@ export default function PostListView() {
             </div>
           </div>
 
-          {/* Slug */}
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono bg-muted/50 px-3 py-1 rounded-lg border border-border/50 w-fit max-w-full truncate">
-            <ExternalLink className="size-3 shrink-0" />
-            <span className="truncate">{item?.slug || item?.id?.slice(0, 12)}</span>
+          {/* Slug & Status */}
+          <div className="flex flex-col gap-1.5 w-fit max-w-full">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-mono bg-muted/50 px-3 py-1 rounded-lg border border-border/50 truncate">
+              <ExternalLink className="size-3 shrink-0" />
+              <span className="truncate">{item?.slug || item?.id?.slice(0, 12)}</span>
+            </div>
+            <span className={cn(
+              "text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border w-fit",
+              item?.status === "draft" 
+                ? "bg-amber-500/10 text-amber-600 border-amber-500/20" 
+                : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+            )}>
+              {item?.status === "draft" ? "Draft" : "Published"}
+            </span>
           </div>
 
           {/* Action */}

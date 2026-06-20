@@ -28,6 +28,7 @@ function AdminTopNav({ isMobileMenuOpen, setIsMobileMenuOpen }: { isMobileMenuOp
     "/admin/dashboard": "Dashboard",
     "/admin/posts": "Posts",
     "/admin/categories": "Categories",
+    "/admin/categories/form": "Category Form",
     "/admin/authors": "Authors",
     "/admin/users": "Users",
     "/admin/writers": "Requests",

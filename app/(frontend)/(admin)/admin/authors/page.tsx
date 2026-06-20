@@ -24,13 +24,7 @@ export default function AdminAuthorsPage() {
             <Search className="size-4 shrink-0" />
             <input type="text" placeholder="Search authors..." className="bg-transparent text-sm focus:outline-none w-36" />
           </div>
-          <Link
-            href="/admin/authors/form"
-            className="flex items-center gap-2 h-10 px-5 bg-foreground text-background text-sm font-semibold rounded-lg hover:opacity-85 transition-opacity"
-          >
-            <CirclePlus className="size-4" />
-            Add Author
-          </Link>
+          {/* Removed Add Author button as authors are now automatically generated and synced with Google Auth */}
         </div>
       </div>
 

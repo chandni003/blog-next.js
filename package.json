@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
+    "@opentelemetry/api": "^1.9.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "firebase": "^12.12.0",
+    "firebase-admin": "^14.0.0",
     "framer-motion": "^12.40.0",
     "git": "^0.1.5",
     "imagekit": "^6.0.0",

@@ -26,7 +26,12 @@ export default function AdminUsersPage() {
   async function updateUserRole(id: string, newRole: "user" | "writer" | "admin") {
     setUpdatingId(id);
     try {
-      await updateDoc(doc(db, "users", id), { role: newRole });
+      const res = await fetch("/api/update-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUserId: id, newRole }),
+      });
+      if (!res.ok) throw new Error("Failed to update role");
       setUsers(prev => prev.map(u => u.id === id ? { ...u, role: newRole } : u));
     } catch (e) {
       console.error(e);

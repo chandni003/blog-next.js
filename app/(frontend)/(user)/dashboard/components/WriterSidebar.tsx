@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, PenTool, BookOpen, LogOut, Home, Newspaper } from "lucide-react";
+import { LayoutDashboard, PenTool, BookOpen, LogOut, Home, Newspaper, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ const links = [
   { name: "Overview", link: "/dashboard", icon: LayoutDashboard },
   { name: "Create Post", link: "/dashboard/create-post", icon: PenTool },
   { name: "My Posts", link: "/dashboard/my-posts", icon: Newspaper },
+  { name: "Profile", link: "/dashboard/profile", icon: UserIcon },
   { name: "Home", link: "/", icon: Home },
 ];
 
@@ -45,7 +46,7 @@ export default function WriterSidebar() {
               Main Menu
             </p>
             <nav className="space-y-1">
-              {links.slice(0, 3).map((item) => {
+              {links.slice(0, 4).map((item) => {
                 const Icon = item.icon;
                 const isActive =
                   pathname === item.link ||

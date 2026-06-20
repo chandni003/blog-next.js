@@ -8,41 +8,34 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-export const createNewAuthor = async ({ data }: { data: any }) => {
+export const createNewAuthor = async ({ data, uid }: { data: any; uid: string }) => {
+  if (!uid) {
+    throw new Error("uid is required to map the author to the user");
+  }
   if (!data?.name) {
     throw new Error("name is undefined");
   }
-  // if (!data?.slug){
-  //     throw new Error("slug is undefined");
-  // }
-  // if(!image){
-  //     throw new Error("image is not defined");
-  // }
-  const id= doc(collection(db,"ids")).id;
-  const ref = doc(db, `authors/${id}`);
+
+  const ref = doc(db, `authors/${uid}`);
   await setDoc(ref, {
     ...data,
-    id: id,
-    // image:image,
+    id: uid, // Use the UID as the author ID
     timestamp: Timestamp.now(),
   });
 };
 
 //update function
-export const UpdateAuthor = async ({ data }: { data: any }) => {
+export const UpdateAuthor = async ({ data, uid }: { data: any; uid: string }) => {
+  if (!uid) {
+    throw new Error("uid is required to update the correct author");
+  }
   if (!data?.name) {
     throw new Error("name is undefined");
   }
-  // if (!data?.slug){
-  //     throw new Error("slug is undefined");
-  // }
-  // if(!image){
-  //     throw new Error("image is not defined");
-  // }
-  const ref = doc(db, `authors/${data?.id}`);
+
+  const ref = doc(db, `authors/${uid}`);
   await updateDoc(ref, {
     ...data,
-    // image:image,
     timestamp: Timestamp.now(),
   });
 };

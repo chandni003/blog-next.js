@@ -36,12 +36,12 @@ export default function Page() {
   }, [updateCategoryId]);
 
   return (
-    <div className="w-full">
+    <main className="min-h-screen w-full p-6 lg:p-10 transition-colors duration-300">
       
       {/* Top Navigation / Header */}
-      <div className="max-w-3xl mx-auto mb-10">
-        <Link href="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs font-bold uppercase tracking-widest mb-6 group">
-           <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
+      <div className="max-w-2xl mx-auto mb-10">
+        <Link href="/admin/categories" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors text-xs font-bold uppercase tracking-widest mb-6 group">
+           <ArrowLeft className="size-4 group-hover:-translate-x-1 transition-transform" /> Back to Categories
         </Link>
         
         <div className="flex justify-between items-center bg-card p-8 rounded-[2rem] border border-border shadow-sm">
@@ -69,7 +69,7 @@ export default function Page() {
         </div>
       </div>
 
-      <section className="max-w-3xl mx-auto">
+      <section className="max-w-2xl mx-auto">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -84,7 +84,7 @@ export default function Page() {
           {/* Subtle Background Glow */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] -z-10" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-6">
             {/* Category Name */}
             <div className="flex flex-col gap-3">
               <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2 ml-1">
@@ -168,6 +168,6 @@ export default function Page() {
           )}
         </form>
       </section>
-    </div>
+    </main>
   );
 }

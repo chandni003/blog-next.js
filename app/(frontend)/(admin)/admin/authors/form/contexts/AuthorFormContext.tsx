@@ -35,7 +35,7 @@ export default function  AuthorformcontextProvider({
         setIsLoading(true);
         setIsDone(false);
         try{
-            await createNewAuthor({data:data});
+            await createNewAuthor({data:data, uid: "admin_manual_creation"});
             setIsDone(true);
         }catch(error:any){
             setError(error?.message);
@@ -52,9 +52,24 @@ export default function  AuthorformcontextProvider({
         try{
             const res = await getAuthor(id);
             if(res.exists()){
-                setData(res.data());
-
-
+                let authorData = res.data();
+                
+                // If officialName or email is missing, try to fetch from 'users' collection
+                if (!authorData.officialName || !authorData.email) {
+                    const { doc, getDoc } = await import("firebase/firestore");
+                    const { db } = await import("@/lib/firebase");
+                    const userDoc = await getDoc(doc(db, `users/${id}`));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        authorData = {
+                            ...authorData,
+                            officialName: authorData.officialName || userData.name || userData.displayName,
+                            email: authorData.email || userData.email,
+                        };
+                    }
+                }
+                
+                setData(authorData);
             }
             else{
                 throw new Error(`no data found for id${id}`);
@@ -73,7 +88,7 @@ export default function  AuthorformcontextProvider({
         setIsLoading(true);
         setIsDone(false);
         try{
-            await UpdateAuthor({data:data});
+            await UpdateAuthor({data:data, uid: updateAuthorId as string});
             setIsDone(true);
         }catch(error:any){
             setError(error?.message);

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createNewPost, createUpdatePost, deletePost } from "@/lib/firebase/post/write";
 import { getPost } from "@/lib/firebase/post/read";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useAuthorProfile } from "@/lib/firebase/author/read";
 const PostFormContext = createContext<any>(null);
 
 export default function PostFormContextProvider({
@@ -15,6 +16,7 @@ export default function PostFormContextProvider({
     const updatePostId = searchParams.get("id");
     const router = useRouter();
     const { user } = useAuth();
+    const { data: authorProfile } = useAuthorProfile(user?.uid);
 
     const [data, setData] = useState<any>({});
     const [isloading, setIsLoading] = useState<any>(false);
@@ -32,20 +34,18 @@ export default function PostFormContextProvider({
     }
 
     //create data 
-    const handleCreate = async () => {
+    const handleCreate = async (status: string = "published") => {
         setError(null);
         setIsLoading(true);
         setIsDone(false);
         try {
-            // Stamp author identity onto the post before saving
-            // If the admin already set these via SelectAuthorfield, we respect them.
-            // Otherwise, we fallback to the currently logged in user's details.
             await createNewPost({
                 data: {
                     ...data,
+                    status,
                     authorEmail: data.authorEmail || user?.email || null,
                     authorId: data.authorId || user?.uid || null,
-                    authorName: data.authorName || user?.displayName || null,
+                    authorName: data.authorName || authorProfile?.name || user?.displayName || null,
                 }
             });
             setIsDone(true);
@@ -79,12 +79,12 @@ export default function PostFormContextProvider({
     }
 
     //updating the data
-    const handleUpdate = async () => {
+    const handleUpdate = async (status?: string) => {
         setError(null);
         setIsLoading(true);
         setIsDone(false);
         try {
-            await createUpdatePost({ data: data });
+            await createUpdatePost({ data: status ? { ...data, status } : data });
             setIsDone(true);
         } catch (error: any) {
             setError(error?.message);

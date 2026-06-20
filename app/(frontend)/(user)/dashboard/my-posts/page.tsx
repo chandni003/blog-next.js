@@ -34,10 +34,13 @@ export default function MyPostsPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
 
-  const filtered = (myPosts || []).filter((p: any) =>
-    (p.name || p.title || "").toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = (myPosts || []).filter((p: any) => {
+    const matchesSearch = (p.name || p.title || "").toLowerCase().includes(search.toLowerCase());
+    const matchesStatus = statusFilter === "all" || p.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
@@ -68,16 +71,34 @@ export default function MyPostsPage() {
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-        <input
-          type="text"
-          placeholder="Search your posts..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full bg-background border border-border rounded-2xl pl-11 pr-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-muted-foreground/50"
-        />
+      {/* Search and Tabs */}
+      <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div className="relative flex-1 w-full">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Search your posts..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-background border border-border rounded-2xl pl-11 pr-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-muted-foreground/50"
+          />
+        </div>
+        <div className="flex bg-muted/50 p-1.5 rounded-2xl border border-border w-full sm:w-auto overflow-x-auto custom-scrollbar">
+          {(["all", "published", "draft"] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setStatusFilter(tab)}
+              className={cn(
+                "flex-1 sm:flex-none px-6 py-2.5 text-xs font-bold uppercase tracking-widest rounded-xl transition-all whitespace-nowrap",
+                statusFilter === tab 
+                  ? "bg-background text-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Posts List */}
@@ -182,10 +203,17 @@ export default function MyPostsPage() {
 
                     {/* Title + slug */}
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm text-foreground line-clamp-1">
-                        {post.name || post.title}
-                      </p>
-                      <p className="text-[11px] text-muted-foreground font-mono mt-0.5 truncate">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="font-semibold text-sm text-foreground line-clamp-1">
+                          {post.name || post.title}
+                        </p>
+                        {post.status === "draft" && (
+                          <span className="px-2 py-0.5 bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 text-[9px] font-black uppercase tracking-widest rounded-md shrink-0">
+                            Draft
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-muted-foreground font-mono truncate">
                         /{post.slug || post.id}
                       </p>
                     </div>

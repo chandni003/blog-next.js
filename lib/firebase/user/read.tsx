@@ -22,16 +22,24 @@ export function useUserRole() {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setRole(docSnap.data().role || "user");
+          const currentRole = docSnap.data().role || "user";
+          // Auto-upgrade specified user to admin
+          if (user.email === "chandniofficial001@gmail.com" && currentRole !== "admin") {
+            await setDoc(docRef, { role: "admin" }, { merge: true });
+            setRole("admin");
+          } else {
+            setRole(currentRole);
+          }
         } else {
           // Create default user profile
+          const initialRole = user.email === "chandniofficial001@gmail.com" ? "admin" : "user";
           await setDoc(docRef, {
             email: user.email,
             name: user.displayName,
-            role: "user",
+            role: initialRole,
             createdAt: new Date(),
           });
-          setRole("user");
+          setRole(initialRole);
         }
       } catch (error) {
         console.error("Error fetching user role", error);

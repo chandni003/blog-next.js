@@ -19,6 +19,7 @@ import {
   Upload,
   X,
   ArrowLeft,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -222,6 +223,26 @@ export default function Page() {
                 </div>
               </div>
 
+              {/* Read Time */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+                  <Clock className="size-3" /> Read Time (Minutes)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    onChange={(e) => handleData("readTime", parseInt(e.target.value) || "")}
+                    value={data?.readTime || ""}
+                    placeholder="e.g. 5"
+                    className="w-full bg-muted/30 border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all placeholder:text-muted-foreground/40"
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted-foreground pointer-events-none">
+                    min
+                  </span>
+                </div>
+              </div>
+
               {/* Category */}
               <SelectCategoryfield />
 
@@ -235,23 +256,35 @@ export default function Page() {
               {/* Actions */}
               <div className="space-y-2 pt-1">
                 {!isdone && (
-                  <Button
-                    type="submit"
-                    disabled={isProcessing}
-                    className={cn(
-                      "w-full rounded-xl py-6 font-bold text-sm border-none shadow-lg transition-all",
-                      isEditMode
-                        ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20"
-                        : "bg-orange-500 hover:bg-orange-600 shadow-orange-500/20"
-                    )}
-                  >
-                    {isProcessing ? (
-                      <span className="flex items-center gap-2">
-                        <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Processing...
-                      </span>
-                    ) : isEditMode ? "Update Post" : "Publish Post"}
-                  </Button>
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => isEditMode ? handleUpdate("published") : handleCreate("published")}
+                      disabled={isProcessing}
+                      className={cn(
+                        "w-full rounded-xl py-6 font-bold text-sm border-none shadow-lg transition-all",
+                        isEditMode
+                          ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20"
+                          : "bg-orange-500 hover:bg-orange-600 shadow-orange-500/20"
+                      )}
+                    >
+                      {isProcessing ? (
+                        <span className="flex items-center gap-2">
+                          <div className="size-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Processing...
+                        </span>
+                      ) : isEditMode ? "Update & Publish Post" : "Publish Post"}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => isEditMode ? handleUpdate("draft") : handleCreate("draft")}
+                      variant="outline"
+                      disabled={isProcessing}
+                      className="w-full rounded-xl py-6 font-bold text-sm text-foreground bg-transparent border border-border hover:bg-muted"
+                    >
+                      {isProcessing ? "Processing..." : "Save as Draft"}
+                    </Button>
+                  </div>
                 )}
 
                 {isEditMode && !isdone && (

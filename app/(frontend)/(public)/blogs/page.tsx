@@ -11,7 +11,7 @@ import { useState, useMemo } from "react";
 const POSTS_PER_PAGE = 20;
 
 export default function BlogsPage() {
-  const { data: allPosts, isloading } = usePost();
+  const { data: allFetchedPosts, isloading } = usePost();
   const { data: categories, isloading: categoriesLoading } = useCategories();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,7 +19,12 @@ export default function BlogsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
 
-  // Filter posts — no dummy data anywhere
+  // Filter posts client-side to avoid Firebase query indexing issues
+  const allPosts = useMemo(() => {
+    if (!allFetchedPosts) return [];
+    return allFetchedPosts.filter((p: any) => p.status === "published");
+  }, [allFetchedPosts]);
+
   const filteredPosts = useMemo(() => {
     if (!allPosts) return [];
     let results = [...allPosts];
@@ -243,7 +248,7 @@ export default function BlogsPage() {
                         <span className="opacity-30">·</span>
                       </>
                     )}
-                    <span>{post.authorId}</span>
+                    <span>{post.authorName || post.authorId}</span>
                   </div>
                   <Link href={`/blogs/${post.id}`} className="block">
                     <h2 className="text-lg font-bold tracking-tight text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">

@@ -25,7 +25,7 @@ export default function AdminCategoriesPage() {
             <input type="text" placeholder="Filter categories..." className="bg-transparent text-sm focus:outline-none w-36" />
           </div>
           <Link
-            href="/dashboard/create-category"
+            href="/admin/categories/form"
             className="flex items-center gap-2 h-10 px-5 bg-foreground text-background text-sm font-semibold rounded-lg hover:opacity-85 transition-opacity"
           >
             <CirclePlus className="size-4" />

@@ -23,3 +23,31 @@ export function useAuthors() {
 export const getAuthor = async(id:any) =>{
   return  await getDoc(doc(db,`authors/${id}`));
 }
+
+export function useAuthorProfile(uid: string | undefined) {
+  const { data, error }: any = useSWRSubscription(
+    uid ? ["authors", uid] : null,
+    ([path, id], { next }) => {
+      const ref = doc(db, path, id);
+      const unsub = onSnapshot(
+        ref,
+        (snap) => {
+          if (snap.exists()) {
+            next(null, { id: snap.id, ...snap.data() });
+          } else {
+            next(null, null); // Profile not setup
+          }
+        },
+        (error) => {
+          next(error?.message);
+        }
+      );
+      return () => unsub();
+    }
+  );
+  return {
+    data,
+    error,
+    isLoading: uid ? data === undefined : false,
+  };
+}

@@ -15,10 +15,13 @@ const fadeUp = {
 };
 
 export default function BlogHome() {
-  const { data: posts, isloading: postsLoading } = usePost();
+  const { data: allPosts, isloading: postsLoading } = usePost();
   const { data: categories, isloading: categoriesLoading } = useCategories();
-  const { user } = useAuth();
+  const { user, handleSignInwithGoogle } = useAuth();
   const { role } = useUserRole();
+
+  // Filter published posts client-side
+  const posts = allPosts?.filter((p: any) => p.status === "published");
 
   // Strictly top 10 posts
   const featuredPost = posts?.[0];
@@ -75,15 +78,15 @@ export default function BlogHome() {
 
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <div className="size-6 rounded-full bg-muted flex items-center justify-center font-bold text-[9px] text-foreground shrink-0">
-                      {featuredPost.authorId?.substring(0, 2)?.toUpperCase() || "AD"}
+                      {featuredPost.authorName?.substring(0, 2)?.toUpperCase() || "AD"}
                     </div>
-                    <span className="font-semibold text-foreground/80">{featuredPost.authorId}</span>
+                    <span className="font-semibold text-foreground/80">{featuredPost.authorName || featuredPost.authorId}</span>
                     <span className="opacity-40">·</span>
                     <span>{featuredPost.timestamp?.toDate()?.toLocaleDateString()}</span>
                     <span className="opacity-40">·</span>
                     <span className="flex items-center gap-1">
                       <Clock className="size-3" />
-                      {calculateReadingTime(featuredPost.content)} min read
+                      {featuredPost.readTime || calculateReadingTime(featuredPost.content)} min read
                     </span>
                   </div>
                 </motion.article>
@@ -133,7 +136,7 @@ export default function BlogHome() {
                               <span className="opacity-30">·</span>
                             </>
                           )}
-                          <span>{post.authorId}</span>
+                          <span>{post.authorName || post.authorId}</span>
                         </div>
                         <Link href={`/blogs/${post.id}`} className="block">
                           <h3 className="text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2">
@@ -148,7 +151,7 @@ export default function BlogHome() {
                           <span className="opacity-40">·</span>
                           <span className="flex items-center gap-1">
                             <Clock className="size-3" />
-                            {calculateReadingTime(post.content)} min read
+                            {post.readTime || calculateReadingTime(post.content)} min read
                           </span>
                         </div>
                       </div>
@@ -229,9 +232,9 @@ export default function BlogHome() {
                     <p className="text-sm font-bold text-foreground">Welcome, reader!</p>
                     <p className="text-xs text-muted-foreground mt-0.5">Sign in to access your dashboard and write stories.</p>
                   </div>
-                  <Link href="/login" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-foreground text-background text-xs font-semibold hover:opacity-85 transition-opacity">
+                  <button onClick={handleSignInwithGoogle} className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-foreground text-background text-xs font-semibold hover:opacity-85 transition-opacity">
                     <LogIn className="size-3.5" /> Sign In
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useUserRole } from "@/lib/firebase/user/read";
+import { useAuthorProfile } from "@/lib/firebase/author/read";
+import ProfileSetup from "./components/ProfileSetup";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +32,6 @@ function DashboardTopNav() {
   const pageTitle: Record<string, string> = {
     "/dashboard": "Overview",
     "/dashboard/create-post": "Create Post",
-    "/dashboard/create-category": "Categories",
     "/dashboard/my-posts": "My Posts",
   };
   const title = pageTitle[pathname] || "Dashboard";
@@ -123,6 +124,23 @@ function DashboardTopNav() {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, isLoading: authLoading } = useAuth();
+  const { data: authorProfile, isLoading: authorLoading } = useAuthorProfile(user?.uid);
+
+  // Still loading authentication or checking profile
+  if (authLoading || authorLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/10">
+        <div className="size-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // User is logged in but has no author profile -> FORCE PROFILE SETUP
+  if (user && !authorProfile) {
+    return <ProfileSetup />;
+  }
+
   return (
     <div className="flex min-h-screen bg-muted/10">
       <WriterSidebar />
